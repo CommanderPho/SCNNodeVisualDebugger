@@ -18,6 +18,22 @@
 import Foundation
 import SceneKit
 
+#if os(macOS)
+    typealias SCNColor = NSColor
+	typealias SCNImage = NSImage
+	typealias SCNTouch = NSTouch
+	typealias SCNEvent = NSEvent
+	typealias SCNFont = NSFont
+
+#else
+    typealias SCNColor = UIColor
+	typealias SCNImage = UIImage
+	typealias SCNTouch = UITouch
+	typealias SCNEvent = UIEvent
+	typealias SCNFont = NSFont
+#endif
+
+
 //MARK: AxesSettings
 protocol AxesSettings {
     var axisSize: AxisSize { get }
@@ -30,16 +46,16 @@ protocol AxesSettings {
 
 //MARK: AuxiliaryAxesSettings
 fileprivate protocol AuxiliaryAxesSettings {
-    static var defaultAxesSizeValue: Float { get }
-    static var sizeValueInFractionsOfNodeSize: Float { get }
+    static var defaultAxesSizeValue: SCNFloat { get }
+    static var sizeValueInFractionsOfNodeSize: SCNFloat { get }
     
-    static func makeAxisSize(from nodeSize: Float, length: Float) -> AxisSize
+    static func makeAxisSize(from nodeSize: SCNFloat, length: SCNFloat) -> AxisSize
 }
 
 
 //MARK: AuxiliaryAxesSettings Default Implementation
 extension AuxiliaryAxesSettings {
-    static func makeAxisSize(from nodeSize: Float, length: Float) -> AxisSize {
+    static func makeAxisSize(from nodeSize: SCNFloat, length: SCNFloat) -> AxisSize {
         let size = min(nodeSize * sizeValueInFractionsOfNodeSize, defaultAxesSizeValue)
         return AxisSize(width: size, length: length, depth: size)
     }
@@ -48,24 +64,24 @@ extension AuxiliaryAxesSettings {
 
 //MARK: AxesColors
 struct AxesColors {
-    let x: UIColor
-    let y: UIColor
-    let z: UIColor
+    let x: SCNColor
+    let y: SCNColor
+    let z: SCNColor
 }
 
 
 //MARK: AxisSize
 struct AxisSize {
-    let width: Float
-    let length: Float
-    let depth: Float
+    let width: SCNFloat
+    let length: SCNFloat
+    let depth: SCNFloat
 }
 
 
 //MARK: LocalAxesSettings
 struct LocalAxesSettings: AxesSettings, AuxiliaryAxesSettings {
-    static let defaultAxesSizeValue: Float = 0.1
-    static let sizeValueInFractionsOfNodeSize: Float = 0.01
+    static let defaultAxesSizeValue: SCNFloat = 0.1
+    static let sizeValueInFractionsOfNodeSize: SCNFloat = 0.01
     
     let axisSize: AxisSize
     let geometry: SCNGeometry
@@ -81,7 +97,7 @@ struct LocalAxesSettings: AxesSettings, AuxiliaryAxesSettings {
                                chamferRadius: 0.0)
     }
     
-    static func make(for node: SCNNode, customAxisLength: Float? = nil) -> AxesSettings {
+    static func make(for node: SCNNode, customAxisLength: SCNFloat? = nil) -> AxesSettings {
         let length = customAxisLength ?? node.lengthOfTheGreatestSideOfNodeBox
         let nodeSize = node.lengthOfTheGreatestSideOfNodeBox
         return LocalAxesSettings(axisSize: makeAxisSize(from: nodeSize, length: length))
@@ -91,9 +107,9 @@ struct LocalAxesSettings: AxesSettings, AuxiliaryAxesSettings {
 
 //MARK: PivotAxesSettings
 struct PivotAxesSettings: AxesSettings, AuxiliaryAxesSettings {
-    static let defaultAxesSizeValue: Float = 0.07
-    static let sizeValueInFractionsOfNodeSize: Float = 0.005
-    static let lengthExtraFactor: Float = 1.5
+    static let defaultAxesSizeValue: SCNFloat = 0.07
+    static let sizeValueInFractionsOfNodeSize: SCNFloat = 0.005
+    static let lengthExtraFactor: SCNFloat = 1.5
     
     let axisSize: AxisSize
     let geometry: SCNGeometry

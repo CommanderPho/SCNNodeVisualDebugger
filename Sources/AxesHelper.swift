@@ -24,13 +24,13 @@ struct AxesHelper {
     
     static func makeAxes(with settings: AxesSettings) -> SCNNode {
         
-        func generateAxis(color: UIColor, rotation: SCNVector4, geometry: SCNGeometry) -> SCNNode {
+        func generateAxis(color: SCNColor, rotation: SCNVector4, geometry: SCNGeometry) -> SCNNode {
             let material = SCNMaterial()
             material.diffuse.contents = color
             geometry.materials = [material]
             
             let axis = SCNNode(geometry: geometry)
-            let offset = settings.axisSize.length * 0.5
+			let offset: SCNFloat = settings.axisSize.length * 0.5
             axis.pivot = SCNMatrix4MakeTranslation(0, -offset, 0)
             axis.rotation = rotation
             return axis

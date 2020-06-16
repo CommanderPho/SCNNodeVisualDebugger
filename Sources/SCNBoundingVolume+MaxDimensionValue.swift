@@ -18,23 +18,29 @@
 import Foundation
 import SceneKit
 
+#if os(macOS)
+    public typealias SCNFloat = CGFloat
+#else
+	public typealias SCNFloat = Float
+#endif
+
 extension SCNBoundingVolume {
-    private var height: Float {
+    private var height: SCNFloat {
         let (min, max) = self.boundingBox
         return max.y - min.y
     }
     
-    private var width: Float {
+    private var width: SCNFloat {
         let (min, max) = self.boundingBox
         return max.x - min.x
     }
     
-    private var length: Float {
+    private var length: SCNFloat {
         let (min, max) = self.boundingBox
         return max.z - min.z
     }
     
-    var lengthOfTheGreatestSide: Float {
+    var lengthOfTheGreatestSide: SCNFloat {
         return max(width, max(height, length))
     }
 }

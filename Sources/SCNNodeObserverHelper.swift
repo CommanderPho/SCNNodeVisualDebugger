@@ -26,7 +26,7 @@ protocol SCNNodeObserverHelperDelegate: class {
 
 //MARK: SCNNodeObserverHelper
 protocol SCNNodeObserverHelper: class  {
-    weak var delegate: SCNNodeObserverHelperDelegate? { get set }
+	var delegate: SCNNodeObserverHelperDelegate? { get set }
     func addObserver(to node: SCNNode)
     func removeObserver(from node: SCNNode)
     func removeAllObservers()
@@ -75,7 +75,7 @@ struct SCNNodeObserverHelperProvider {
 //MARK: PreIOS11SCNNodeObserverHelper
 fileprivate class PreIOS11SCNNodeObserverHelper: NSObject, SCNNodeObserverHelper {
     
-    var delegate: SCNNodeObserverHelperDelegate?
+    weak var delegate: SCNNodeObserverHelperDelegate?
     
     private var observedNodes = [SCNNode]()
     

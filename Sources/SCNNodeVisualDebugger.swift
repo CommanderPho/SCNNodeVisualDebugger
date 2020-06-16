@@ -15,7 +15,13 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+import Foundation
+#if os(macOS)
+import AppKit
+#elseif os(iOS)
 import UIKit
+#endif
+
 import SceneKit
 
 class SCNNodeVisualDebugger: NSObject {
@@ -24,11 +30,27 @@ class SCNNodeVisualDebugger: NSObject {
     
     var enableDebugAxesByDoubleTap: Bool = false
     
-    fileprivate lazy var doubleTapGestureRecognizer: UITapGestureRecognizer = {
+
+	
+	#if os(macOS)
+	
+	fileprivate lazy var doubleTapGestureRecognizer: NSClickGestureRecognizer = {
+        let tapGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+//        tapGestureRecognizer.numberOfTapsRequired = 2
+		tapGestureRecognizer.numberOfClicksRequired = 2
+        return tapGestureRecognizer
+    }()
+	
+	#elseif os(iOS)
+	
+	fileprivate lazy var doubleTapGestureRecognizer: UITapGestureRecognizer = {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
         tapGestureRecognizer.numberOfTapsRequired = 2
         return tapGestureRecognizer
     }()
+	
+	#endif
+	
     
     private lazy var nodeObserverHelper: SCNNodeObserverHelper = {
         let helper = SCNNodeObserverHelperProvider.make()
@@ -101,6 +123,27 @@ extension SCNNodeVisualDebugger {
         view.removeGestureRecognizer(doubleTapGestureRecognizer)
     }
     
+	#if os(macOS)
+    
+	@objc
+    fileprivate func handleDoubleTap(_ gestureRecognize: NSGestureRecognizer) {
+        guard let scnView = gestureRecognize.view as? SCNView else {
+            fatalError("View must be type SCNView")
+        }
+        
+        let point = gestureRecognize.location(in: scnView)
+        let hitResults = scnView.hitTest(point, options: [:])
+        if let node = hitResults.first?.node {
+            if node.hasDebugAxes() {
+                node.removeDebugAxes()
+            } else {
+                node.addDebugAxes()
+            }
+        }
+    }
+	
+	#elseif os(iOS)
+	
     @objc
     fileprivate func handleDoubleTap(_ gestureRecognize: UIGestureRecognizer) {
         guard let scnView = gestureRecognize.view as? SCNView else {
@@ -117,6 +160,10 @@ extension SCNNodeVisualDebugger {
             }
         }
     }
+	
+	#endif
+	
+
 }
 
 
